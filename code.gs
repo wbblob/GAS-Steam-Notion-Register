@@ -33,7 +33,7 @@ function myFunction() {
   let result = "完了しました！"
   let error = ''
   if (nsfw_s.length > 0) {
-    error = `\\nただし、以下のものについては、年齢確認に引っかかってしまったので、手動で登録してください…\\n以下のリストをコピーしてから「OK」をクリックしてください。${nsfw_s.join(',\\n')}`
+    error = `\\nただし、以下のものについては、年齢確認に引っかかってしまったので、手動で登録してください…\\n以下のリストをコピーしてから「OK」をクリックしてください。${nsfw_s.join('\\n')}`
   }
 
   Browser.msgBox(result + error)
