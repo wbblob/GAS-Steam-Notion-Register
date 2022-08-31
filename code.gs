@@ -63,7 +63,7 @@ function getgamepage(gameid){
   let url = `https://store.steampowered.com/app/${gameid}`
   let options = {
   headers : {
-    'Cookie' : 'Steam_Language=japanese; sessionid=081ec6ae1ec5cd6dfa867080'
+    'Cookie' : 'Steam_Language=japanese;'
     }
   }
 
