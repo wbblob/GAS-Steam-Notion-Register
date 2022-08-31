@@ -192,7 +192,7 @@ function createGamePage(gamedata){
         "multi_select" : 
           gamedata.publishers.map(publisher => ({"name":unescapeHtml(publisher)})),
       },
-      "Steam store URL":{
+      "Steam URL":{
         "url": 
           gamedata.url
       }
