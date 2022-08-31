@@ -73,11 +73,6 @@ function getgamepage(gameid){
 
   // 年齢確認チェック
   if (content.includes('誕生日を入力して次に進んでください')) {
-    const output = content.split('\n');//改行で分割して1行ごとに要素とした配列
-
-    for(let i=0;i<output.length;i++){
-        console.log(output[i]);
-    }
     return null
   }
   
@@ -186,11 +181,11 @@ function createGamePage(gamedata){
       },
       "開発元": {
         "multi_select" : 
-          gamedata.developpers.map(developper => ({"name":unescapeHtml(developper)})),
+          gamedata.developpers.map(developper => ({"name":unescapeHtml(developper).replace(',', ' ')})),
       },
       "発売元": {
         "multi_select" : 
-          gamedata.publishers.map(publisher => ({"name":unescapeHtml(publisher)})),
+          gamedata.publishers.map(publisher => ({"name":unescapeHtml(publisher).replace(',', ' ')})),
       },
       "Steam URL":{
         "url": 
