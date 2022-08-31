@@ -13,10 +13,30 @@ function myFunction() {
   // URLからアプリケーションIDの取得
   let appids = urls.map(url => url2Appid(url))
 
-  // 取得したアプリケーションIDに対してそれぞれ登録処理
-  appids.forEach(id => {
-    let pageid = registergame(id);
+  // 年齢確認に引っかかったリストの用意
+  var nsfw_s = []
+
+  // 取得したURLに対してそれぞれ登録処理
+  urls.forEach(url => {
+    // アプリケーションIDの取得
+    if (url != '' | null){
+      let id = url2Appid(url)
+      let pageid = registergame(id);
+      // 年齢確認に引っかかったか確認
+      if (pageid == null) {
+        Logger.log('muri')
+        nsfw_s.push(url)
+      }
+    }
   })
+
+  let result = "完了しました！"
+  let error = ''
+  if (nsfw_s.length > 0) {
+    error = `\\nただし、以下のものについては、年齢確認に引っかかってしまったので、手動で登録してください…\\n以下のリストをコピーしてから「OK」をクリックしてください。${nsfw_s.join(',\\n')}`
+  }
+
+  Browser.msgBox(result + error)
   
   // 記載されたURLの消去（初期化）
   urlrange.setValue('')
@@ -25,8 +45,12 @@ function myFunction() {
 // 登録処理
 function registergame(gameid) {
   let gamedata = getgamepage(gameid)
-  let pageid = createGamePage(gamedata).id
-  
+
+  if (gamedata != null){
+    var pageid = createGamePage(gamedata).id
+  } else {
+    var pageid = null
+  }
   return pageid
 }
 
@@ -39,17 +63,27 @@ function getgamepage(gameid){
   let url = `https://store.steampowered.com/app/${gameid}`
   let options = {
   headers : {
-    'Cookie' : 'Steam_Language=japanese;'
+    'Cookie' : 'Steam_Language=japanese; sessionid=081ec6ae1ec5cd6dfa867080'
     }
   }
 
   // get response & content
   let response = UrlFetchApp.fetch(url, options)
   let content = response.getContentText()
+
+  // 年齢確認チェック
+  if (content.includes('誕生日を入力して次に進んでください')) {
+    const output = content.split('\n');//改行で分割して1行ごとに要素とした配列
+
+    for(let i=0;i<output.length;i++){
+        console.log(output[i]);
+    }
+    return null
+  }
   
   // get params
     // タイトルの収集
-  let title = Parser.data(content).from('<div id="appHubAppName" class="apphub_AppName">').to('</div>').iterate()[0];
+  let title = Parser.data(content).from('class="apphub_AppName">').to('</div>').iterate()[0];
     // カバー画像URLの収集
   let coverurl = Parser.data(content).from('<img class="game_header_image_full" src="').to('">').iterate()[0];
     //　リリース日の収集
@@ -121,6 +155,8 @@ function sendRequest(url, method, data=null) {
 
   // get response
   let notion_data = UrlFetchApp.fetch(url, options);
+  // 通信頻度制限回避用のSleep
+  Utilities.sleep(500)
   notion_data = JSON.parse(notion_data)
   return notion_data
 }
